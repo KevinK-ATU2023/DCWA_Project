@@ -1,9 +1,17 @@
 const express = require('express')
+const mysql_dao = require('./mysql_dao')
+const mongo_dao = require('./mongo_dao')
+
 const app = express()
 const port = 3004
 
 app.get('/', (req, res) => {
-    res.send('Hello from server')
+    mysql_dao.get_all_product()
+    .then((data) => {
+        res.send(data)
+    }).catch((err) => {
+        console.log(err)
+    })
 })
 
 app.listen(port, () => {
