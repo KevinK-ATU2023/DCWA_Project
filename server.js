@@ -36,7 +36,7 @@ app.get('/stores/edit/:sid', async (req,res) => {
     let store_id = req.params.sid
     let store = undefined;
 
-    await mysql_dao.get_one_by_id(store_id)
+    await mysql_dao.get_one_by_id_store(store_id)
     .then((data) => {
         store = data
     }).catch((error) => {
@@ -124,17 +124,40 @@ app.get('/products', async (req, res) => {
 
 app.get('/products/delete/:pid', async (req, res) => {
     let product_id = req.params.pid
-    let product = undefined;
+    let products = undefined;
 
-    await mysql_dao.get_product_and_price_by_pid(product_id)
+    let errors = [];
+
+    await mysql_dao.get_one_product_store_id(product_id)
     .then((data) => {
         // console.log(data)
-        product = data
+        products = data;
     }).catch((error) => {
         console.log(error)
     })
 
-    console.log(product)
+    for (var e of products) {
+        if (e.sid.length > 0 ) {
+            errors.push({
+                msg: `${e.pid} is currently in stores and cannot be deleted`
+            })
+
+            break;
+        }
+    }
+    res.render("delete_product", { "errors": errors });
+
+    if (errors.length == 0) {
+
+        await mysql_dao.delete_product_store(product_id)
+        .then((data) => {
+            console.log(data)
+        }).catch((error) => {
+            console.log(error)
+        })
+
+        res.redirect("/products")
+    }
 })
 
 app.get('/managers', async (req, res) => {
