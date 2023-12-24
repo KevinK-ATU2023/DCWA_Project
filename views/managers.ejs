@@ -1,0 +1,27 @@
+<style>
+    table, th, td{
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+    <h1>Managers (MongoDB)</h1>
+
+    <a href="http://localhost:3004/managers/add">Add Manager (MongoDB)</a>
+    <br>
+    <table>
+        <tr>
+            <th>Manager ID</th>
+            <th>Name</th>
+            <th>Salary</th>
+        </tr>
+        <% managers.forEach((man) => { %>
+            <tr>
+                <td><%= man._id %></td>
+                <td><%= man.name %></td>
+                <td><%= man.salary %></td>
+            </tr>
+        <% }) %>
+    </table>
+    <a href="http://localhost:3004/">Home</a>
+</body>

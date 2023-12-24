@@ -58,6 +58,17 @@ function get_all_products_and_price() {
     })
 }
 
+function get_product_and_price_by_pid(id) {
+    return new Promise((resolve, reject) => {
+        pool.query(`select ps.pid, p.productdesc, s.sid, s.location, ps.price from product_store ps left join product p on ps.pid = p.pid left join store s on ps.sid = s.sid where ps.pid = "${id}";`)
+        .then((data) => {
+            resolve(data)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
 function update_location_by_id(id, location) {
     return new Promise((resolve, reject) => {
         pool.query(`UPDATE store SET location = "${location}" where sid="${id}"`)
@@ -85,6 +96,7 @@ module.exports = {
     get_one_by_id,
     get_one_by_manager_id,
     get_all_products_and_price, 
+    get_product_and_price_by_pid,
     update_location_by_id,
     update_managerid_by_id
 }

@@ -51,7 +51,7 @@ app.get('/stores/edit/:sid', async (req,res) => {
 app.post('/stores/edit/:sid', 
     [
         check("location").isLength({min: 1}).withMessage("Please enter Location"),
-        check("manager_id").isLength({min: 4}, {max: 4}).withMessage("Manager ID should be 4 characters long")
+        check("manager_id").isLength({min: 4, max: 4}).withMessage("Manager ID should be 4 characters long")
     ],
     async (req, res) => {
         let manager_id = req.body.manager_id;
@@ -122,9 +122,91 @@ app.get('/products', async (req, res) => {
     }
 })
 
-app.get('/products/delete/:pid', (req, res) => {
-    
+app.get('/products/delete/:pid', async (req, res) => {
+    let product_id = req.params.pid
+    let product = undefined;
+
+    await mysql_dao.get_product_and_price_by_pid(product_id)
+    .then((data) => {
+        // console.log(data)
+        product = data
+    }).catch((error) => {
+        console.log(error)
+    })
+
+    console.log(product)
 })
+
+app.get('/managers', async (req, res) => {
+    let managers = undefined;
+
+    await mongo_dao.find_all()
+    .then((data) => {
+        // console.log(data)
+        managers = data
+    }).catch((error) => {
+        console.log(error)
+    })
+    console.log(managers)
+
+    if (managers != undefined) {
+        res.render("managers", { "managers":managers })
+    }
+})
+
+app.get('/managers/add', (req, res) => {
+    res.render("add_managers", { "errors": undefined })
+})
+
+app.post('/managers/add', 
+    [
+        check("mid").isLength({min: 4, max: 4}).withMessage("Manager ID must be 4 characters"),
+        check("name").isLength({min: 5}).withMessage("Name must be > 5 characters"),
+        check("salary").isFloat({min: 30000, max: 70000}).withMessage("Salary must be between 30,000 and 70,000")
+    ]
+    ,async (req, res) => {
+        let managers_check = undefined; 
+        let errors = validationResult(req);
+        // console.log(req.body)
+
+        let new_manager = {
+            _id: req.body.mid,
+            name: req.body.name,
+            salary: req.body.salary
+        }
+        // console.log(errors.errors)
+
+        await mongo_dao.find_by_id(new_manager._id)
+        .then((data) => {
+            // console.log(data);
+            managers_check = data;
+        }).catch((error) => {
+            console.log(error)
+        })
+
+        if (managers_check.length > 0) {
+            errors.errors.push({ msg: `Manager ${new_manager._id} already exists in MongoDB` })
+        }
+        
+        errors.errors.forEach((e) => {
+            console.log(e.msg)
+        })
+        
+        if (errors.errors.length == 0) {
+            await mongo_dao.add_manager(new_manager)
+            .then((data) => {
+                console.log(`Manager ${new_manager._id}: added to database`)
+            }).catch((error) => {
+                console.log(error.message)
+            })
+
+            res.redirect('/managers')
+        }
+        else {
+            res.render("add_managers", { "errors": errors.errors })
+        }
+    }
+)
 
 app.listen(port, () => {
     console.log(`\nListening on port ${port}`)

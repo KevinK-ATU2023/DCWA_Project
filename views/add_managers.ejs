@@ -1,0 +1,26 @@
+<body>
+    <h1>Add Manager</h1>
+
+    <% if (errors != undefined) { %>
+        <ul>
+            <% errors.forEach((e) => { %>
+                <li> <%=e.msg %> </li>
+            <% }) %>
+        </ul>
+    <% } %>
+
+    <form method="POST" action="http://localhost:3004/managers/add">
+        <label>Manager ID</label>
+        <input type="text" name="mid" />
+        <br>
+        <label>Name</label>
+        <input type="text" name="name" />
+        <br>
+        <label>Salary</label>
+        <input type="number" name="salary" />
+        <br>
+        <input type="submit" value="Add" />
+    </form>
+    <br>
+    <a href="http://localhost:3004/">Home</a>
+</body>

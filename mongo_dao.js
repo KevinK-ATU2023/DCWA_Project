@@ -32,4 +32,19 @@ function find_by_id(mid) {
     })
 }
 
-module.exports = { find_all, find_by_id }
+function add_manager(manager) {
+    return new Promise((resolve, reject) => {
+        coll.insertOne(manager)
+        .then((documents) => {
+            resolve(documents)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
+module.exports = { 
+    find_all, 
+    find_by_id, 
+    add_manager 
+}

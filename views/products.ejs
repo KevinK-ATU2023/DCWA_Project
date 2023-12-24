@@ -8,9 +8,9 @@
     <h1>Products</h1>
     <table>
         <tr>
-            <th>SID</th>
-            <th>Location</th>
-            <th>Managers ID</th>
+            <th>Product ID</th>
+            <th>Description</th>
+            <th>Store ID</th>
             <th>Location</th>
             <th>Price</th>
         </tr>
@@ -21,7 +21,7 @@
                 <td><%= prod.sid %></td>
                 <td><%= prod.location %></td>
                 <td><%= prod.price %></td>
-                <td><a href="">Delete <%=prod.productdesc %></a></td>
+                <td><a href="http://localhost:3004/products/delete/<%=prod.pid %>">Delete <%=prod.productdesc %></a></td>
             </tr>
         <% }) %>
     </table>
