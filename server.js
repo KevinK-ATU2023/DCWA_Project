@@ -1,9 +1,8 @@
-const express = require('express')
 const mysql_dao = require('./mysql_dao')
 const mongo_dao = require('./mongo_dao')
-const ejs = require('ejs')
 const { check, validationResult } = require('express-validator')
 
+const express = require('express')
 const app = express()
 const port = 3004
 
@@ -11,6 +10,7 @@ const body_parser = require('body-parser')
 app.use(body_parser.urlencoded({ extended: false }));
 app.use(body_parser.json());
 
+const ejs = require('ejs')
 app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
