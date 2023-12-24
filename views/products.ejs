@@ -1,0 +1,29 @@
+<style>
+    table, th, td{
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+    <h1>Products</h1>
+    <table>
+        <tr>
+            <th>SID</th>
+            <th>Location</th>
+            <th>Managers ID</th>
+            <th>Location</th>
+            <th>Price</th>
+        </tr>
+        <% products.forEach((prod) => { %>
+            <tr>
+                <td><%= prod.pid %></td>
+                <td><%= prod.productdesc %></td>
+                <td><%= prod.sid %></td>
+                <td><%= prod.location %></td>
+                <td><%= prod.price %></td>
+                <td><a href="">Delete <%=prod.productdesc %></a></td>
+            </tr>
+        <% }) %>
+    </table>
+    <a href="http://localhost:3004/">Home</a>
+</body>

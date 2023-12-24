@@ -1,0 +1,29 @@
+<style>
+    table, th, td{
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+    <h1>Stores</h1>
+
+    <a href="/">Add Store</a>
+    <br>
+    <table>
+        <tr>
+            <th>SID</th>
+            <th>Location</th>
+            <th>Managers ID</th>
+            <th>Action</th>
+        </tr>
+        <% stores.forEach((st) => { %>
+            <tr>
+                <td><%= st.sid %></td>
+                <td><%= st.location %></td>
+                <td><%= st.mgrid %></td>
+                <td><a href="http://localhost:3004/store/edit/<%=st.sid %>">Update</a></td>
+            </tr>
+        <% }) %>
+    </table>
+    <a href="http://localhost:3004/">Home</a>
+</body>

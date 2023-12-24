@@ -19,3 +19,17 @@ function find_all() {
         })
     })
 }
+
+function find_by_id(mid) {
+    return new Promise((resolve, reject) => {
+        let cursor = coll.find({ _id: mid })
+        cursor.toArray()
+        .then((documents) => {
+            resolve(documents)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
+module.exports = { find_all, find_by_id }
