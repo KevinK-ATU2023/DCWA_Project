@@ -32,6 +32,39 @@ app.get('/stores', async (req, res) => {
     }
 })
 
+app.get('/stores/add', (req, res) => {
+    res.render("add_store", { "errors": undefined })
+})
+
+app.post('/stores/add', 
+    [
+        check("sid").isLength({min: 5, max: 5}).withMessage("Store ID must be 5 characters long"),
+        check("location").isLength({min: 1}).withMessage("Please enter Location"),
+        check("mid").isLength({min: 4, max: 4}).withMessage("Manager ID should be 4 characters long")
+    ]
+    ,async (req, res) => {
+    const errors = validationResult(req)
+    let new_store = {
+        sid: req.body.sid,
+        location: req.body.location,
+        mgrid: req.body.mid
+    }
+
+    if (errors.errors.length == 0) {
+        await mysql_dao.add_store(new_store)
+        .then((data) => {
+            console.log(data)
+        }).catch((errror) => {
+            console.log(error)
+        })
+
+        res.redirect('/stores')
+    }
+    else {
+        res.render("add_store", { "errors": errors.errors })
+    }
+})
+
 app.get('/stores/edit/:sid', async (req,res) => {
     let store_id = req.params.sid
     let store = undefined;
@@ -170,7 +203,6 @@ app.get('/managers', async (req, res) => {
     }).catch((error) => {
         console.log(error)
     })
-    console.log(managers)
 
     if (managers != undefined) {
         res.render("managers", { "managers":managers })

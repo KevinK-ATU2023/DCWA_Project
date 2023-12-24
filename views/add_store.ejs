@@ -1,0 +1,26 @@
+<body>
+    <h1>Add Store</h1>
+
+    <% if (errors != undefined) { %>
+        <ul>
+            <% errors.forEach((e) => { %>
+                <li> <%=e.msg %> </li>
+            <% }) %>
+        </ul>
+    <% } %>
+
+    <form method="POST" action="http://localhost:3004/stores/add">
+        <label>Store ID</label>
+        <input type="text" name="sid" />
+        <br>
+        <label>Location</label>
+        <input type="text" name="location" />
+        <br>
+        <label>Manager ID</label>
+        <input type="number" name="mid" />
+        <br>
+        <input type="submit" value="Add" />
+    </form>
+    <br>
+    <a href="http://localhost:3004/">Home</a>
+</body>

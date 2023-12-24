@@ -113,6 +113,21 @@ function delete_product_store(id) {
     })
 }
 
+function add_store(store) {
+    return new Promise((resolve, reject) => {
+        var add_query = {
+            sql: 'INSERT INTO store VALUES (?, ?, ?)',
+            values: [store.sid, store.location, store.mgrid]
+        }
+        pool.query(add_query)
+        .then((data) => {
+            resolve(data)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
 module.exports = { 
     get_all_store, 
     get_one_by_id_store,
@@ -122,5 +137,6 @@ module.exports = {
     get_product_and_price_by_pid,
     update_location_by_id,
     update_managerid_by_id,
-    delete_product_store
+    delete_product_store,
+    add_store
 }
