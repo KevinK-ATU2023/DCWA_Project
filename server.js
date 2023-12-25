@@ -43,11 +43,28 @@ app.post('/stores/add',
         check("mid").isLength({min: 4, max: 4}).withMessage("Manager ID should be 4 characters long")
     ]
     ,async (req, res) => {
+    let found_manager = false;
     const errors = validationResult(req)
     let new_store = {
         sid: req.body.sid,
         location: req.body.location,
         mgrid: req.body.mid
+    }
+
+    await mongo_dao.find_by_id(new_store.mgrid)
+    .then((data) => {
+        // console.log(data)
+        if(data.length != 0) {
+            found_manager = true 
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
+
+    if (!found_manager) {
+        errors.errors.push({
+            msg: `Manager ID:${new_store.mgrid} doesn't exist`
+        })
     }
 
     if (errors.errors.length == 0) {
@@ -84,55 +101,70 @@ app.get('/stores/edit/:sid', async (req,res) => {
 app.post('/stores/edit/:sid', 
     [
         check("location").isLength({min: 1}).withMessage("Please enter Location"),
-        check("manager_id").isLength({min: 4, max: 4}).withMessage("Manager ID should be 4 characters long")
+        check("mid").isLength({min: 4, max: 4}).withMessage("Manager ID should be 4 characters long")
     ],
     async (req, res) => {
-        let manager_id = req.body.manager_id;
-        let store_id = req.params.sid;
-        let location = req.body.location;
-        let manager = [];
-        let store = [];
+        let new_store = {
+            sid: req.params.sid,
+            location: req.body.location,
+            mgrid: req.body.mid
+        }
+        let has_another = false
+        let found_manager = false
         const errors = validationResult(req)
-        console.log(manager_id);
 
-        await mysql_dao.get_one_by_manager_id(manager_id)
+        await mysql_dao.get_one_by_manager_id(new_store.mgrid)
         .then((data) => {
-            store = data
+            // console.log(data)
+            if(data.length > 0) {
+                has_another = true
+            }
         }).catch((error) => {
             console.log(error)
         })
 
-        await mongo_dao.find_by_id(manager_id)
+        await mongo_dao.find_by_id(new_store.mgrid)
         .then((data) => {
             // console.log(data)
-            manager = data
+            if (data.length > 0) {
+                found_manager = true
+            }
         }) .catch((error) => {
             console.log(error)
         })
 
-        console.log(store)
 
-
-        if (store[0].length != 0 && store[0].sid != store_id) {
+        if (has_another == true) {
             errors.errors.push({ msg: "Manager ID already managing a store" })
+        }
+        if(found_manager == false) {
+            errors.errors.push({ msg: `Manager (ID: ${new_store.mgrid}) doesn't exists` })
         }
 
         if (errors.errors.length > 0) {
-            res.render('edit_store', { "store": store[0], "errors":errors.errors })
+            await mysql_dao.get_one_by_id_store(new_store.sid)
+            .then((data) => {
+                store = data
+            }).catch((error) => {
+                console.log(error)
+            })
+
+            res.render('edit_store', { "store": new_store, "errors":errors.errors })
         }
         else {
-            await mysql_dao.update_location_by_id(store_id, location)
+            await mysql_dao.update_location_by_id(new_store.sid, new_store.location)
             .then((data) => {
-                console.log(data)
+                // console.log(data)
             }).catch((error) => {
                 console.log(error)
             })
-            await mysql_dao.update_managerid_by_id(store_id, manager_id)
+            await mysql_dao.update_managerid_by_id(new_store.sid, new_store.mgrid)
             .then((data) => {
-                console.log(data)
+                // console.log(data)
             }).catch((error) => {
                 console.log(error)
             })
+            console.log("Data Changed\n")
             res.redirect(`http://localhost:${port}/stores`)
         }
 
